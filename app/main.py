@@ -1,17 +1,22 @@
+from typing import AsyncContextManager
+
 from fastapi import FastAPI, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from app import crud, schemas, database, models
 from fastapi.security import OAuth2PasswordRequestForm
 from app import crud, schemas, auth
 from sqlalchemy.ext.asyncio import AsyncSession
+from contextlib import asynccontextmanager
 
 
-app = FastAPI()
-
-@app.on_event("startup")
-async def on_startup():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     async with database.engine.begin() as conn:
         await conn.run_sync(database.Base.metadata.create_all)
+    yield
+
+app = FastAPI(lifespan=lifespan)
+
 
 @app.post("/login/")
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(database.get_db)):
