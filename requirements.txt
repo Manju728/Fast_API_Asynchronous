@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+sqlalchemy>=2.0
+aiomysql
+asyncmy
+pydantic
+passlib[bcrypt]
+python-jose[cryptography]
+python-multipart
+bcrypt
